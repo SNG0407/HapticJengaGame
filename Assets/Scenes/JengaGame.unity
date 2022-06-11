@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -144,7 +144,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2834221049904051638, guid: f26aac7164c1ae54a88a290794490413, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2834221049904051639, guid: f26aac7164c1ae54a88a290794490413, type: 3}
       propertyPath: m_RootOrder
@@ -304,6 +304,7 @@ GameObject:
   - component: {fileID: 709699834}
   - component: {fileID: 709699833}
   - component: {fileID: 709699832}
+  - component: {fileID: 709699835}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -328,8 +329,8 @@ Camera:
   m_GameObject: {fileID: 709699831}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -376,6 +377,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &709699835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709699831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80234f6057dc39440aa02f216054b342, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &967566296
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,13 +662,14 @@ MonoBehaviour:
   - {fileID: 4478844880832521739, guid: 7525ee1c8cb54af45a47ed1ec5f6a052, type: 3}
   - {fileID: 4478844880832521739, guid: 1b14d7aa324965c47bfdab09372d781b, type: 3}
   - {fileID: 4478844880832521739, guid: ba612b337efbe984182831afe065fec6, type: 3}
-  height: 13
+  height: 12
   zBias: 0
-  spawnHeight: 0
+  spawnHeight: 1
   spacingBetweenBlocks: 1
   bGameRunning: 0
   gameOverUI: {fileID: 1154717344}
   gameStartmenuUI: {fileID: 1189051232}
+  bCloserToDevice: 0
 --- !u!4 &1122104112
 Transform:
   m_ObjectHideFlags: 0
@@ -1013,7 +1027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 91615830673989337, guid: bffdb44f75664034d8ab95f8d8ca5d3a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 91615830673989287, guid: bffdb44f75664034d8ab95f8d8ca5d3a, type: 3}
@@ -1048,7 +1062,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1327686425
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,8 +8,8 @@ public class Tower : MonoBehaviour
     [Header("Block setting")]
     public Transform[] blockPrefabs;
     public int height = 17;
-    public float zBias = 12.0f;
-    public float spawnHeight = -3.5f;
+    public float zBias = 0.0f;
+    public float spawnHeight = 1.0f;
     public float spacingBetweenBlocks = 1.0f;
 
     private List<Transform> blocks;
@@ -20,6 +20,9 @@ public class Tower : MonoBehaviour
     [Header("UI setting")]
     public GameObject gameOverUI;
     public GameObject gameStartmenuUI;
+
+    [Header("Game setting")]
+    public bool bCloserToDevice = false;
 
     private int[] getRandomBlockType()
     {
@@ -56,7 +59,7 @@ public class Tower : MonoBehaviour
         if (bGameRunning)
         {
             CheckGameOver();
-            //if (!bDestroying) CheckBlockInLine();
+            if (!bDestroying) CheckBlockInLine();
         }
     }
 
@@ -74,12 +77,6 @@ public class Tower : MonoBehaviour
             else
             {
                 BuildHorizontalLayer(i);
-            }
-            for (int j = 0; j < 3; j++)
-            {
-                Rigidbody body = blocks[3 * i + j].GetComponent<Rigidbody>();
-                body.velocity = Vector3.zero;
-                body.angularVelocity = Vector3.zero;
             }
             yield return wait;
         }
@@ -138,7 +135,7 @@ public class Tower : MonoBehaviour
         for (int i = 0; i < height; ++i)
         {
             int[] tempBlockIndex = new int[3];
-            refHeight = Block.height / 2.0f * transform.localScale.y + i * Block.height * transform.localScale.y;
+            refHeight = Block.height / 2.0f + i * Block.height;
             iTempBlock = 0;
             blockIndex = -1;
             bDestroy = true;
@@ -153,7 +150,7 @@ public class Tower : MonoBehaviour
                 blockIndex += 1;
                 //find block located at that height and not falling
                 //refheight - 0.1f < BlockHeight < refHeight + 0.1f
-                if (refHeight - 0.3f * transform.localScale.y < block.transform.position.y && block.transform.position.y < refHeight + 0.3f * transform.localScale.y)
+                if (refHeight - 0.3f  < block.transform.position.y && block.transform.position.y < refHeight + 0.3f )
                 {
                     if (!IsStableBlock(block))
                     {
@@ -236,7 +233,35 @@ public class Tower : MonoBehaviour
         //rotate
         for (int i = blockLargestIndex - 2; i < blocks.Count; i++)
         {
-            blocks[i].transform.RotateAround(Vector3.zero, Vector3.up, -90.0f);
+            // rotate Blocks
+            if(blocks[i].transform.rotation.y > 80.0f)
+            {
+                // if rotation.y == 90.0f
+                /*
+                Quaternion rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                blocks[i].transform.rotation = rotation;
+                blocks[i].transform.position = new Vector3(
+                    blocks[i].transform.position.z,
+                    blocks[i].transform.position.y,
+                    blocks[i].transform.position.x
+                );
+                */
+                blocks[i].transform.RotateAround(Vector3.zero, Vector3.up, -90.0f);
+            }
+            else
+            {
+                // if rotation.y == 0.0f
+                /*
+                Quaternion rotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
+                blocks[i].transform.rotation = rotation;
+                blocks[i].transform.position = new Vector3(
+                    blocks[i].transform.position.z,
+                    blocks[i].transform.position.y,
+                    blocks[i].transform.position.x
+                );
+                */
+                blocks[i].transform.RotateAround(Vector3.zero, Vector3.up, 90.0f);
+            }
         }
     }
 
@@ -250,24 +275,10 @@ public class Tower : MonoBehaviour
         StartCoroutine(Stabilize());
     }
 
-    private IEnumerator RotateBlocks(int startIdx)
-    {
-        var wait = new WaitForSeconds(0.05f);
-        float sumAngle = 0.0f;
-        float speed = 10.0f;
-        while (sumAngle <= 90.0f)
-        {
-            sumAngle += Time.deltaTime * speed;
-            for (int i = startIdx; i < blocks.Count; i++)
-            {
-                blocks[i].transform.RotateAround(Vector3.zero, Vector3.up, -1.0f * Time.deltaTime * speed);
-            }
-            yield return wait;
-        }
-    }
-
     private IEnumerator Stabilize()
     {
+        Debug.Log("Stabilize");
+
         var wait = new WaitForSeconds(0.05f);
 
         int index = 0;
@@ -296,17 +307,17 @@ public class Tower : MonoBehaviour
         int[] blockTypes = getRandomBlockType();
 
         Transform block = Instantiate(blockPrefabs[blockTypes[0]], transform);
-        block.localPosition = new Vector3(0.0f, y, zBias);
+        block.localPosition = new Vector3(0f, y, Block.length / 2.0f);
         block.GetComponent<Block>().BlockType = blockTypes[0];
         blocks[3 * layerIndex + 0] = block;
 
         block = Instantiate(blockPrefabs[blockTypes[1]], transform);
-        block.localPosition = new Vector3(Block.width + Block.deformation, y, zBias);
+        block.localPosition = new Vector3(Block.width + Block.deformation * 2, y, Block.length / 2.0f);
         block.GetComponent<Block>().BlockType = blockTypes[1];
         blocks[3 * layerIndex + 1] = block;
 
         block = Instantiate(blockPrefabs[blockTypes[2]], transform);
-        block.localPosition = new Vector3(-Block.width - Block.deformation, y, zBias);
+        block.localPosition = new Vector3(-Block.width - Block.deformation * 2, y, Block.length / 2.0f);
         block.GetComponent<Block>().BlockType = blockTypes[2];
         blocks[3 * layerIndex + 2] = block;
     }
@@ -320,19 +331,19 @@ public class Tower : MonoBehaviour
 
         Transform block = Instantiate(blockPrefabs[blockTypes[0]], transform);
         block.localRotation = rotation;
-        block.localPosition = new Vector3(0, y, zBias);
+        block.localPosition = new Vector3(Block.length / 2.0f, y, 0.0f);
         block.GetComponent<Block>().BlockType = blockTypes[0];
         blocks[3 * layerIndex + 0] = block;
 
         block = Instantiate(blockPrefabs[blockTypes[1]], transform);
         block.localRotation = rotation;
-        block.localPosition = new Vector3(0, y, Block.width + Block.deformation + zBias);
+        block.localPosition = new Vector3(Block.length / 2.0f, y, Block.width + Block.deformation * 2);
         block.GetComponent<Block>().BlockType = blockTypes[1];
         blocks[3 * layerIndex + 1] = block;
 
         block = Instantiate(blockPrefabs[blockTypes[2]], transform);
         block.localRotation = rotation;
-        block.localPosition = new Vector3(0, y, -Block.width - Block.deformation + zBias);
+        block.localPosition = new Vector3(Block.length / 2.0f, y, -Block.width - Block.deformation * 2);
         block.GetComponent<Block>().BlockType = blockTypes[2];
         blocks[3 * layerIndex + 2] = block;
     }
