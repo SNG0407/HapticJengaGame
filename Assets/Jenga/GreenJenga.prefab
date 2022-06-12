@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -2428233205647108485}
   - component: {fileID: 1266730631462692013}
   - component: {fileID: 6929324037475395959}
+  - component: {fileID: -3993041474488362068}
   m_Layer: 0
   m_Name: GreenJenga
   m_TagString: Untagged
@@ -147,3 +148,21 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &-3993041474488362068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428668107791369729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 3
+  outlineColor: {r: 0.3301887, g: 0.054812115, b: 0, a: 1}
+  outlineWidth: 10
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []

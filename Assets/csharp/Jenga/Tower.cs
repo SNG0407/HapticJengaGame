@@ -22,8 +22,8 @@ public class Tower : MonoBehaviour
     public GameObject gameStartmenuUI;
 
     [Header("Game setting")]
-    public bool bCloserToDevice = false;
-
+    private int gameScore = 0;
+    
     private int[] getRandomBlockType()
     {
         int[] blockTypes = new int[3];
@@ -234,10 +234,8 @@ public class Tower : MonoBehaviour
         for (int i = blockLargestIndex - 2; i < blocks.Count; i++)
         {
             // rotate Blocks
-            if(blocks[i].transform.rotation.y > 80.0f)
+            if (blocks[i].transform.rotation.eulerAngles.y > 80.0f && blocks[i].transform.rotation.eulerAngles.y < 100.0f)
             {
-                // if rotation.y == 90.0f
-                /*
                 Quaternion rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                 blocks[i].transform.rotation = rotation;
                 blocks[i].transform.position = new Vector3(
@@ -245,13 +243,9 @@ public class Tower : MonoBehaviour
                     blocks[i].transform.position.y,
                     blocks[i].transform.position.x
                 );
-                */
-                blocks[i].transform.RotateAround(Vector3.zero, Vector3.up, -90.0f);
             }
             else
             {
-                // if rotation.y == 0.0f
-                /*
                 Quaternion rotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
                 blocks[i].transform.rotation = rotation;
                 blocks[i].transform.position = new Vector3(
@@ -259,8 +253,6 @@ public class Tower : MonoBehaviour
                     blocks[i].transform.position.y,
                     blocks[i].transform.position.x
                 );
-                */
-                blocks[i].transform.RotateAround(Vector3.zero, Vector3.up, 90.0f);
             }
         }
     }
@@ -271,6 +263,7 @@ public class Tower : MonoBehaviour
         foreach (int[] blockIndexArr in blocksIndex)
         {
             DestroyBlockInLine(blockIndexArr);
+            updateScore(100);
         }
         StartCoroutine(Stabilize());
     }
@@ -348,4 +341,13 @@ public class Tower : MonoBehaviour
         blocks[3 * layerIndex + 2] = block;
     }
 
+    private void updateScore(int updateScore)
+    {
+        gameScore += updateScore;
+    }
+
+    public int getScore()
+    {
+        return gameScore;
+    }
 }

@@ -18,7 +18,7 @@ public class Block : MonoBehaviour
 
     public int BlockType = 0;
     public bool IsClosedToDevice = false;
-
+    
     private Vector3 DeformRandomly(Vector3 point)
     {
         return new Vector3(
@@ -107,6 +107,7 @@ public class Block : MonoBehaviour
     private void Start()
     {
         InitMesh();
+        GetComponent<Outline>().enabled = false;
     }
 
     private void FixedUpdate()
@@ -122,7 +123,14 @@ public class Block : MonoBehaviour
         {
             body.angularVelocity = new Vector3(0.0f, 0.0f, 0.0f);
         }
+
+        if(IsClosedToDevice)
+        {
+            GetComponent<Outline>().enabled = true;
+        }
+        else
+        {
+            GetComponent<Outline>().enabled = false;
+        }
     }
-
-
 }

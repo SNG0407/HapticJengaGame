@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     private Camera cam;
+    private Tower refTower;
     private Vector3 previousPosition;
     private Vector3 refPosition;
 
@@ -12,6 +13,7 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         cam = GetComponent<Camera>();
+        refTower = GameObject.Find("Tower").GetComponent<Tower>();
         refPosition = transform.position;
     }
 
@@ -35,5 +37,4 @@ public class CameraController : MonoBehaviour
             previousPosition = cam.ScreenToViewportPoint(Input.mousePosition);
         }
     }
-
 }
