@@ -100,8 +100,6 @@ public class Block : MonoBehaviour
 
         Rigidbody body = GetComponent<Rigidbody>();
         body.mass = weight;
-
-        GetComponent<MeshRenderer>().material 
     }
 
     private void Start()
