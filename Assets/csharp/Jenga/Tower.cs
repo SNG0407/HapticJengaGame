@@ -20,6 +20,7 @@ public class Tower : MonoBehaviour
     [Header("UI setting")]
     public GameObject gameOverUI;
     public GameObject gameStartmenuUI;
+    public GameObject gamePlayingUI;
 
     [Header("Game setting")]
     private int gameScore = 0;
@@ -50,8 +51,7 @@ public class Tower : MonoBehaviour
     {
         gameOverUI.SetActive(false);
         gameStartmenuUI.SetActive(true);
-        StartCoroutine(GameSet());
-        gameStartmenuUI.SetActive(false);
+        gamePlayingUI.SetActive(false);
     }
 
     private void Update()
@@ -65,6 +65,9 @@ public class Tower : MonoBehaviour
 
     private IEnumerator GameSet()
     {
+        // init score
+        gameScore = 0;
+
         var wait = new WaitForSeconds(0.1f);
         // Set blocks for game
         blocks = new List<Transform>(new Transform[height * 3]);
@@ -86,6 +89,7 @@ public class Tower : MonoBehaviour
     {
         StartCoroutine(GameSet());
         gameStartmenuUI.SetActive(false);
+        gamePlayingUI.SetActive(true);
     }
 
     public void GameReset()
@@ -99,6 +103,8 @@ public class Tower : MonoBehaviour
         blocks.Clear();
         // game over ui off
         gameOverUI.SetActive(false);
+        // game playing ui on
+        gamePlayingUI.SetActive(true);
         // block setting
         StartCoroutine(GameSet());
     }
@@ -119,6 +125,7 @@ public class Tower : MonoBehaviour
         {
             // GameOver UI Active
             gameOverUI.SetActive(true);
+            gamePlayingUI.SetActive(false);
             bGameRunning = false;
         }
     }
