@@ -24,7 +24,9 @@ public class Tower : MonoBehaviour
 
     [Header("Game setting")]
     private int gameScore = 0;
-    
+    private GameObject device;
+    private int nearestBlockIdx = -1;
+
     private int[] getRandomBlockType()
     {
         int[] blockTypes = new int[3];
@@ -52,13 +54,18 @@ public class Tower : MonoBehaviour
         gameOverUI.SetActive(false);
         gameStartmenuUI.SetActive(true);
         gamePlayingUI.SetActive(false);
+        device = GameObject.Find("Device");
     }
 
     private void Update()
     {
         if (bGameRunning)
         {
+            // Find the block closest to the device
+            if (device != null) nearestBlockIdx = FindNearBlockNum(device.transform.position);
+            // Check game over
             CheckGameOver();
+            // Check if blocks of the same color are on one line
             if (!bDestroying) CheckBlockInLine();
         }
     }
@@ -309,16 +316,19 @@ public class Tower : MonoBehaviour
         Transform block = Instantiate(blockPrefabs[blockTypes[0]], transform);
         block.localPosition = new Vector3(0f, y, Block.length / 2.0f);
         block.GetComponent<Block>().BlockType = blockTypes[0];
+        block.GetComponent<Block>().BlockIdx = 3 * layerIndex + 0;
         blocks[3 * layerIndex + 0] = block;
 
         block = Instantiate(blockPrefabs[blockTypes[1]], transform);
         block.localPosition = new Vector3(Block.width + Block.deformation * 2, y, Block.length / 2.0f);
         block.GetComponent<Block>().BlockType = blockTypes[1];
+        block.GetComponent<Block>().BlockIdx = 3 * layerIndex + 1;
         blocks[3 * layerIndex + 1] = block;
 
         block = Instantiate(blockPrefabs[blockTypes[2]], transform);
         block.localPosition = new Vector3(-Block.width - Block.deformation * 2, y, Block.length / 2.0f);
         block.GetComponent<Block>().BlockType = blockTypes[2];
+        block.GetComponent<Block>().BlockIdx = 3 * layerIndex + 2;
         blocks[3 * layerIndex + 2] = block;
     }
 
@@ -333,18 +343,21 @@ public class Tower : MonoBehaviour
         block.localRotation = rotation;
         block.localPosition = new Vector3(Block.length / 2.0f, y, 0.0f);
         block.GetComponent<Block>().BlockType = blockTypes[0];
+        block.GetComponent<Block>().BlockIdx = 3 * layerIndex + 0;
         blocks[3 * layerIndex + 0] = block;
 
         block = Instantiate(blockPrefabs[blockTypes[1]], transform);
         block.localRotation = rotation;
         block.localPosition = new Vector3(Block.length / 2.0f, y, Block.width + Block.deformation * 2);
         block.GetComponent<Block>().BlockType = blockTypes[1];
+        block.GetComponent<Block>().BlockIdx = 3 * layerIndex + 1;
         blocks[3 * layerIndex + 1] = block;
 
         block = Instantiate(blockPrefabs[blockTypes[2]], transform);
         block.localRotation = rotation;
         block.localPosition = new Vector3(Block.length / 2.0f, y, -Block.width - Block.deformation * 2);
         block.GetComponent<Block>().BlockType = blockTypes[2];
+        block.GetComponent<Block>().BlockIdx = 3 * layerIndex + 2;
         blocks[3 * layerIndex + 2] = block;
     }
 
@@ -356,5 +369,36 @@ public class Tower : MonoBehaviour
     public int getScore()
     {
         return gameScore;
+    }
+
+    public int getNearestBlockIdx()
+    {
+        return nearestBlockIdx;
+    }
+
+    public int FindNearBlockNum(Vector3 refPos)
+    {
+        int num = 0;
+        int i = 0;
+        float shortestDistance = 0.0f;
+        foreach(var block in blocks)
+        {
+            if(shortestDistance == 0.0f)
+            {
+                shortestDistance = Vector3.Distance(refPos, block.position);
+            }
+            else
+            {
+                float dis = Vector3.Distance(refPos, block.position);
+                if(dis < shortestDistance)
+                {
+                    shortestDistance = dis;
+                    num = i;
+                }
+            }
+            i++;
+        }
+        print(shortestDistance);
+        return num;
     }
 }

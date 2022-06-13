@@ -17,7 +17,8 @@ public class Block : MonoBehaviour
     private Mesh mesh;
 
     public int BlockType = 0;
-    public bool IsClosedToDevice = false;
+    public int BlockIdx = 0;
+    public bool IsNearestToDevice = false;
     
     private Vector3 DeformRandomly(Vector3 point)
     {
@@ -91,10 +92,7 @@ public class Block : MonoBehaviour
         mesh.uv = uvs;
 
         GetComponent<MeshFilter>().mesh = mesh;
-        /*
-        BoxCollider boxCollider = GetComponent<BoxCollider>();
-        boxCollider.size = new Vector3(width, height, length);
-        */
+
         var collider = GetComponent<MeshCollider>();
 
         collider.convex = true;
@@ -102,12 +100,13 @@ public class Block : MonoBehaviour
 
         Rigidbody body = GetComponent<Rigidbody>();
         body.mass = weight;
+
+        GetComponent<MeshRenderer>().material 
     }
 
     private void Start()
     {
         InitMesh();
-        GetComponent<Outline>().enabled = false;
     }
 
     private void FixedUpdate()
@@ -124,13 +123,18 @@ public class Block : MonoBehaviour
             body.angularVelocity = new Vector3(0.0f, 0.0f, 0.0f);
         }
 
-        if(IsClosedToDevice)
+        // 가장 가까운 블럭인지
+        if(GameObject.Find("Tower").GetComponent<Tower>() != null)
         {
-            GetComponent<Outline>().enabled = true;
-        }
-        else
-        {
-            GetComponent<Outline>().enabled = false;
+            if(BlockIdx == GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx())
+            {
+                Debug.Log(BlockIdx);
+                IsNearestToDevice = true;
+            }
+            else
+            {
+                IsNearestToDevice = false;
+            }
         }
     }
 }
