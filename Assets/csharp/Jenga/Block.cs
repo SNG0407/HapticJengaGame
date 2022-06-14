@@ -100,6 +100,7 @@ public class Block : MonoBehaviour
 
         Rigidbody body = GetComponent<Rigidbody>();
         body.mass = weight;
+
     }
 
     private void Start()
@@ -126,7 +127,6 @@ public class Block : MonoBehaviour
         {
             if(BlockIdx == GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx())
             {
-                Debug.Log(BlockIdx);
                 IsNearestToDevice = true;
             }
             else

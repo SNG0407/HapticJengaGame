@@ -284,8 +284,6 @@ public class Tower : MonoBehaviour
 
     private IEnumerator Stabilize()
     {
-        Debug.Log("Stabilize");
-
         var wait = new WaitForSeconds(0.05f);
 
         int index = 0;
@@ -398,7 +396,6 @@ public class Tower : MonoBehaviour
             }
             i++;
         }
-        print(shortestDistance);
         return num;
     }
 }
