@@ -114,7 +114,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BlockType: 0
-  IsClosedToDevice: 0
+  BlockIdx: 0
+  IsNearestToDevice: 0
+  transMaterial: {fileID: 2100000, guid: 5b5ab6bbc3ba2ce4897bf1a7f1cb3277, type: 2}
 --- !u!114 &1266730631462692013
 MonoBehaviour:
   m_ObjectHideFlags: 0

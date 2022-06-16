@@ -68,6 +68,12 @@ public class Tower : MonoBehaviour
             // Check if blocks of the same color are on one line
             if (!bDestroying) CheckBlockInLine();
         }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            Vector3 newPosition = transform.position;
+            newPosition.y += 10.0f;
+            UnityHaptics.SetToolPosition(transform.position);
+        }
     }
 
     private IEnumerator GameSet()

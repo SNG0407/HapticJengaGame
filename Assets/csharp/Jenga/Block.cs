@@ -19,7 +19,10 @@ public class Block : MonoBehaviour
     public int BlockType = 0;
     public int BlockIdx = 0;
     public bool IsNearestToDevice = false;
-    
+
+    private Material initMaterial;
+    public Material transMaterial;
+
     private Vector3 DeformRandomly(Vector3 point)
     {
         return new Vector3(
@@ -101,6 +104,7 @@ public class Block : MonoBehaviour
         Rigidbody body = GetComponent<Rigidbody>();
         body.mass = weight;
 
+        initMaterial = GetComponent<MeshRenderer>().material;
     }
 
     private void Start()
@@ -125,13 +129,21 @@ public class Block : MonoBehaviour
         // 가장 가까운 블럭인지
         if(GameObject.Find("Tower").GetComponent<Tower>() != null)
         {
-            if(BlockIdx == GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx())
+            if(BlockIdx == GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx() && IsNearestToDevice == false)
             {
                 IsNearestToDevice = true;
+                GetComponent<MeshRenderer>().material = transMaterial;
+                /*
+                Color color = transMaterial.color;
+                color.a = 0.5f;
+                transMaterial.color = color;
+                GetComponent<MeshRenderer>().material = transMaterial;
+                */
             }
-            else
+            else if(BlockIdx != GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx() && IsNearestToDevice == true)
             {
                 IsNearestToDevice = false;
+                GetComponent<MeshRenderer>().material = initMaterial;
             }
         }
     }
