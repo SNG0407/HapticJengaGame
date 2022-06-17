@@ -166,7 +166,9 @@ public class HapticTool : MonoBehaviour {
     {
 	if (HapticWorkspace != null)
 	{
-	    UnityHaptics.SetHapticWorkspace(HapticWorkspace);
+			Debug.Log("HapticWorkspace.position : " + HapticWorkspace.position);	
+
+		UnityHaptics.SetHapticWorkspace(HapticWorkspace);
 	}
     }
 

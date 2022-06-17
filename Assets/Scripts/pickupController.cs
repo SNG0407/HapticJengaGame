@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class pickupController : MonoBehaviour
 {
@@ -92,12 +93,33 @@ public class pickupController : MonoBehaviour
 
         }
     }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        try
+        {
+            heldObj.GetComponent<HapticMesh>().enabled = true;
+        }
+        catch (NullReferenceException)
+        {
+            Debug.Log("NullReferenceException");
+        }
+        catch (Exception)
+        {
+            Debug.Log("Exception");
+        }
+
+    }
+
+
     void MoveObejct()
     {
-        if (Vector3.Distance(heldObj.transform.position, holdArea.position) > 0.1f)
+        //if (Vector3.Distance(heldObj.transform.position, holdArea.position) > 0.1f)
+          if (Vector3.Distance(heldObj.transform.position, holdArea.position) > 0.1f)
         {
             Vector3 moveDirection = (holdArea.position - heldObj.transform.position);
-            heldObjRB.AddForce(moveDirection * pickupForce);
+            //heldObjRB.AddForce(moveDirection * pickupForce);
+            heldObj.transform.position = gameObject.transform.position;
         }
     }
 
@@ -105,6 +127,7 @@ public class pickupController : MonoBehaviour
     {
         if (pickObj.GetComponent<Rigidbody>())
         {
+            //gameObject.transform.position = pickObj.GetComponent<Renderer>().bounds.center;
             heldObjRB = pickObj.GetComponent<Rigidbody>();
             heldObjRB.useGravity = false;
             heldObjRB.drag = 10;
@@ -112,6 +135,8 @@ public class pickupController : MonoBehaviour
 
             heldObjRB.transform.parent = holdArea;
             heldObj = pickObj;
+            heldObj.transform.position = gameObject.transform.position;//GetComponent<Renderer>().bounds.center;
+            heldObj.GetComponent<HapticMesh>().enabled = false;
         }
     }
     void DropObject()
@@ -119,6 +144,20 @@ public class pickupController : MonoBehaviour
         heldObjRB.useGravity = true;
         heldObjRB.drag = 1;
         heldObjRB.constraints = RigidbodyConstraints.None;
+
+        //StartCoroutine(delay(heldObj, heldObjRB)) ;
+        //heldObj.GetComponent<HapticMesh>().enabled = true;
+
+        heldObjRB.transform.parent = null;
+        heldObj = null;
+
+    }
+
+    private IEnumerator delay(GameObject heldObj, Rigidbody heldObjRB)
+    {
+        var wait = new WaitForSeconds(0.8f);
+        yield return wait;
+        heldObj.GetComponent<HapticMesh>().enabled = true;
 
         heldObjRB.transform.parent = null;
         heldObj = null;
