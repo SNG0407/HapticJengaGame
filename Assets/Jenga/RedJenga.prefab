@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -2428233205647108485}
   - component: {fileID: 1266730631462692013}
   - component: {fileID: 6929324037475395959}
+  - component: {fileID: 549867665659046701}
   m_Layer: 0
   m_Name: RedJenga
   m_TagString: Untagged
@@ -149,3 +150,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &549867665659046701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428668107791369729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46a59123f25a55049975d2b599e24536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  glow: {fileID: 2100000, guid: 3f20893919efb714dbe67d8e0ee9fc5c, type: 2}
+  nonglow: {fileID: 2100000, guid: a1f4e3c6e1bedc84e8043a5993fe06fc, type: 2}

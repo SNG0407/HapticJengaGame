@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-[RequireComponent(typeof(Rigidbody), typeof(MeshCollider))]
+[RequireComponent(typeof(Rigidbody), typeof(MeshCollider), typeof(GlowManager))]
 //[RequireComponent(typeof(JengaController), typeof(ObjectControl))]
 public class Block : MonoBehaviour
 {
@@ -132,18 +132,12 @@ public class Block : MonoBehaviour
             if(BlockIdx == GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx() && IsNearestToDevice == false)
             {
                 IsNearestToDevice = true;
-                GetComponent<MeshRenderer>().material = transMaterial;
-                /*
-                Color color = transMaterial.color;
-                color.a = 0.5f;
-                transMaterial.color = color;
-                GetComponent<MeshRenderer>().material = transMaterial;
-                */
+                GetComponent<GlowManager>().SetGlow();
             }
             else if(BlockIdx != GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx() && IsNearestToDevice == true)
             {
                 IsNearestToDevice = false;
-                GetComponent<MeshRenderer>().material = initMaterial;
+                GetComponent<GlowManager>().SetGlow();
             }
         }
     }

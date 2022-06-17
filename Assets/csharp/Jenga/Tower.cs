@@ -13,6 +13,7 @@ public class Tower : MonoBehaviour
     public float spacingBetweenBlocks = 1.0f;
 
     private List<Transform> blocks;
+    private List<int[]> blockToBeDeleted;
     public bool bGameRunning = false;
     private bool bDestroying = false;
     private bool bRotating = false;
@@ -55,6 +56,7 @@ public class Tower : MonoBehaviour
         gameStartmenuUI.SetActive(true);
         gamePlayingUI.SetActive(false);
         device = GameObject.Find("Device");
+        blockToBeDeleted = new List<int[]>();
     }
 
     private void Update()
@@ -63,16 +65,34 @@ public class Tower : MonoBehaviour
         {
             // Find the block closest to the device
             if (device != null) nearestBlockIdx = FindNearBlockNum(device.transform.position);
-            // Check game over
-            CheckGameOver();
-            // Check if blocks of the same color are on one line
-            if (!bDestroying) CheckBlockInLine();
-        }
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            Vector3 newPosition = transform.position;
-            newPosition.y += 10.0f;
-            UnityHaptics.SetToolPosition(transform.position);
+
+            if (!bDestroying && blockToBeDeleted.Count == 0)
+            {
+                // Check game over
+                CheckGameOver();
+                // Check if blocks of the same color are on one line
+                CheckBlockInLine();
+            }
+            else if (!bDestroying && blockToBeDeleted.Count != 0) 
+            {
+                StartCoroutine(DestroyBlocksCorutine());
+                //DestoryBlocks();
+            }
+            
+            // test for add block 
+            /*
+            if(Input.GetKeyDown(KeyCode.T))
+            {
+                AddBlockOneLine();
+                int j = 0;
+                foreach (var block in blocks)
+                {
+                    Debug.Log(j + " " + block.GetComponent<Block>().BlockIdx);
+                    j += 1;
+                }
+                Debug.Log("Block length: " + blocks.Count);
+            }
+            */
         }
     }
 
@@ -80,10 +100,14 @@ public class Tower : MonoBehaviour
     {
         // init score
         gameScore = 0;
-
-        var wait = new WaitForSeconds(0.1f);
+        // init blocktobedeleted
+        blockToBeDeleted.Clear();
+        bDestroying = false;
         // Set blocks for game
         blocks = new List<Transform>(new Transform[height * 3]);
+
+        var wait = new WaitForSeconds(0.1f);
+
         for (int i = 0; i < height; ++i)
         {
             if (i % 2 == 0)
@@ -127,8 +151,9 @@ public class Tower : MonoBehaviour
         int numOfFallingBlocks = 0;
         foreach (var block in blocks)
         {
+            if (block == null) continue;
             Rigidbody body = block.GetComponent<Rigidbody>();
-            if (body.velocity.y < -1.0f)
+            if (body.velocity.y < -5.0f)
             {
                 numOfFallingBlocks += 1;
             }
@@ -145,7 +170,6 @@ public class Tower : MonoBehaviour
 
     private void CheckBlockInLine()
     {
-        List<int[]> blockDestroyIndex = new List<int[]>();
         float refHeight = 0; //기준 높이
         int refBlockType = -1; //이전에 찾은 block의 index
         int iTempBlock = 0; //tempBlock의 block index
@@ -202,16 +226,18 @@ public class Tower : MonoBehaviour
             // destroy 판정
             if (bDestroy && iTempBlock >= 3)
             {
-                blockDestroyIndex.Add(tempBlockIndex);
+                blockToBeDeleted.Add(tempBlockIndex);
             }
         }
 
         //Destroy할 블럭이 존재 -> Destroy
+        /*
         if (blockDestroyIndex.Count != 0)
         {
             bGameRunning = false;
             DestoryBlocks(blockDestroyIndex);
         }
+        */
     }
 
     private bool IsStableBlock(Transform refBlock)
@@ -274,17 +300,48 @@ public class Tower : MonoBehaviour
                     blocks[i].transform.position.x
                 );
             }
+            blocks[i].GetComponent<Block>().BlockIdx -= 3;
         }
     }
 
-    private void DestoryBlocks(List<int[]> blocksIndex)
+    private void DestoryBlocks()
     {
-        blocksIndex.Reverse();
-        foreach (int[] blockIndexArr in blocksIndex)
+        bDestroying = true;
+        blockToBeDeleted.Reverse();
+        foreach (int[] blockIndexArr in blockToBeDeleted)
         {
             DestroyBlockInLine(blockIndexArr);
             updateScore(100);
         }
+        blockToBeDeleted.Clear();
+        bDestroying = false;
+        StartCoroutine(Stabilize());
+    }
+
+    private IEnumerator DestroyBlocksCorutine()
+    {
+        var wait = new WaitForSeconds(1.0f);
+
+        bDestroying = true;
+        blockToBeDeleted.Reverse();
+
+        int index = 0;
+        foreach (int[] blockIndexArr in blockToBeDeleted)
+        {
+            for(int i = 0; i < blockIndexArr.Length; i++)
+            {
+                blockIndexArr[i] += index * 3;
+            }
+            DestroyBlockInLine(blockIndexArr);
+            updateScore(100);
+            yield return wait;
+            AddBlockOneLine();
+            yield return wait;
+            index += 1;
+        }
+
+        blockToBeDeleted.Clear();
+        bDestroying = false;
         StartCoroutine(Stabilize());
     }
 
@@ -295,6 +352,7 @@ public class Tower : MonoBehaviour
         int index = 0;
         foreach (Transform block in blocks)
         {
+            if (block == null) continue;
             Rigidbody body = block.GetComponent<Rigidbody>();
             body.velocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
@@ -302,12 +360,75 @@ public class Tower : MonoBehaviour
             index += 1;
             if (index >= blocks.Count)
             {
+                //if (bDestroying) bDestroying = false;
                 bGameRunning = true;
             }
             else
             {
                 yield return wait;
             }
+        }
+    }
+
+    private void AddBlockOneLine()
+    {
+        //add blocks
+        float y = spawnHeight;
+        int[] blockTypes = getRandomBlockType();
+
+        Transform block = Instantiate(blockPrefabs[blockTypes[0]], transform);
+        block.localPosition = new Vector3(0f, y, Block.length / 2.0f);
+        block.GetComponent<Block>().BlockType = blockTypes[0];
+        block.GetComponent<Block>().BlockIdx = 0;
+        blocks.Insert(0, block);
+
+        block = Instantiate(blockPrefabs[blockTypes[1]], transform);
+        block.localPosition = new Vector3(Block.width + Block.deformation * 2, y, Block.length / 2.0f);
+        block.GetComponent<Block>().BlockType = blockTypes[1];
+        block.GetComponent<Block>().BlockIdx = 1;
+        blocks.Insert(1, block);
+
+        block = Instantiate(blockPrefabs[blockTypes[2]], transform);
+        block.localPosition = new Vector3(-Block.width - Block.deformation * 2, y, Block.length / 2.0f);
+        block.GetComponent<Block>().BlockType = blockTypes[2];
+        block.GetComponent<Block>().BlockIdx = 2;
+        blocks.Insert(2, block);
+
+        // height 1 증가
+        height++;
+
+        // 기존 블럭의 위치 조정
+        for(int i = blocks.Count-1; i > 2; i--)
+        {
+            //위치 조정
+            blocks[i].transform.position = new Vector3(
+                    blocks[i].transform.position.x,
+                    blocks[i].transform.position.y + Block.height + Block.deformation,
+                    blocks[i].transform.position.z
+                );
+            //로테이션
+            if (blocks[i].transform.rotation.eulerAngles.y > 80.0f && blocks[i].transform.rotation.eulerAngles.y < 100.0f)
+            {
+                Quaternion rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                blocks[i].transform.rotation = rotation;
+                blocks[i].transform.position = new Vector3(
+                    blocks[i].transform.position.z,
+                    blocks[i].transform.position.y,
+                    blocks[i].transform.position.x
+                );
+            }
+            else
+            {
+                Quaternion rotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
+                blocks[i].transform.rotation = rotation;
+                blocks[i].transform.position = new Vector3(
+                    blocks[i].transform.position.z,
+                    blocks[i].transform.position.y,
+                    blocks[i].transform.position.x
+                );
+            }
+            //인덱스 조정
+            blocks[i].GetComponent<Block>().BlockIdx += 3;
         }
     }
 
