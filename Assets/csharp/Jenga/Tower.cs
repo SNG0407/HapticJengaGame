@@ -15,7 +15,7 @@ public class Tower : MonoBehaviour
     private List<Transform> blocks;
     private List<int[]> blockToBeDeleted;
     public bool bGameRunning = false;
-    private bool bDestroying = false;
+    public bool bDestroying = false;
     private bool bRotating = false;
 
     [Header("UI setting")]
@@ -132,6 +132,7 @@ public class Tower : MonoBehaviour
     public void GameReset()
     {
         // Game reset
+        bGameRunning = false;
         // destroy current existing blocks
         foreach (var block in blocks)
         {
@@ -153,7 +154,7 @@ public class Tower : MonoBehaviour
         {
             if (block == null) continue;
             Rigidbody body = block.GetComponent<Rigidbody>();
-            if (body.velocity.y < -5.0f)
+            if (body.velocity.y < -1.0f)
             {
                 numOfFallingBlocks += 1;
             }
@@ -192,6 +193,7 @@ public class Tower : MonoBehaviour
                     break;
                 }
                 blockIndex += 1;
+                //if(block.transform.position.x < -2.0f || block.transform.position.x > 2.0f || block.transform.position.z < -2.0f)
                 //find block located at that height and not falling
                 //refheight - 0.1f < BlockHeight < refHeight + 0.1f
                 if (refHeight - 0.3f  < block.transform.position.y && block.transform.position.y < refHeight + 0.3f )
@@ -341,13 +343,13 @@ public class Tower : MonoBehaviour
         }
 
         blockToBeDeleted.Clear();
-        bDestroying = false;
+        //bDestroying = false;
         StartCoroutine(Stabilize());
     }
 
     private IEnumerator Stabilize()
     {
-        var wait = new WaitForSeconds(0.05f);
+        var wait = new WaitForSeconds(0.02f);
 
         int index = 0;
         foreach (Transform block in blocks)
@@ -360,7 +362,7 @@ public class Tower : MonoBehaviour
             index += 1;
             if (index >= blocks.Count)
             {
-                //if (bDestroying) bDestroying = false;
+                if (bDestroying) bDestroying = false;
                 bGameRunning = true;
             }
             else
@@ -503,23 +505,16 @@ public class Tower : MonoBehaviour
 
     public int FindNearBlockNum(Vector3 refPos)
     {
-        int num = 0;
+        int num = -1;
         int i = 0;
-        float shortestDistance = 0.0f;
+        float shortestDistance = 5.0f;
         foreach(var block in blocks)
         {
-            if(shortestDistance == 0.0f)
+            float dis = Vector3.Distance(refPos, block.position);
+            if (dis < shortestDistance)
             {
-                shortestDistance = Vector3.Distance(refPos, block.position);
-            }
-            else
-            {
-                float dis = Vector3.Distance(refPos, block.position);
-                if(dis < shortestDistance)
-                {
-                    shortestDistance = dis;
-                    num = i;
-                }
+                shortestDistance = dis;
+                num = i;
             }
             i++;
         }

@@ -7,17 +7,15 @@ public class GlowManager : MonoBehaviour
     public Material glow, nonglow;
     bool isGlowing = true;
 
-    public void SetGlow()
+    public void EnableGlow()
     {
-        if(isGlowing)
-        {
-            gameObject.GetComponent<MeshRenderer>().material = nonglow;
-            isGlowing = false;
-        }
-        else
-        {
-            gameObject.GetComponent<MeshRenderer>().material = glow;
-            isGlowing = true;
-        }
+        gameObject.GetComponent<MeshRenderer>().material = glow;
+        isGlowing = false;
     }
+
+    public void DisableGlow()
+    {
+        gameObject.GetComponent<MeshRenderer>().material = nonglow;
+        isGlowing = true;
+    }    
 }

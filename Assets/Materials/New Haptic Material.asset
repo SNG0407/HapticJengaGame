@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: New Haptic Material
   m_EditorClassIdentifier: 
   HasSurface: 1
-  Stiffness: 0.7120000123977661
-  StaticFriction: 0.1
+  Stiffness: 0.9879999756813049
+  StaticFriction: 0
   DynamicFriction: 0.1
-  MagneticForce: 0.5059999823570251
+  MagneticForce: 0.5249999761581421
   MagneticDistance: 8
   TextureLevel: 0.3
   textureImage: {fileID: 0}
@@ -25,4 +25,4 @@ MonoBehaviour:
   SticksplipStiffness: 0
   SticksplipForce: 0
   VibrationFreq: 10
-  VibrationAmplitude: 0.7300000190734863
+  VibrationAmplitude: 1.309999942779541

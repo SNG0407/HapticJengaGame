@@ -132,12 +132,12 @@ public class Block : MonoBehaviour
             if(BlockIdx == GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx() && IsNearestToDevice == false)
             {
                 IsNearestToDevice = true;
-                GetComponent<GlowManager>().SetGlow();
+                GetComponent<GlowManager>().EnableGlow();
             }
             else if(BlockIdx != GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx() && IsNearestToDevice == true)
             {
                 IsNearestToDevice = false;
-                GetComponent<GlowManager>().SetGlow();
+                GetComponent<GlowManager>().DisableGlow();
             }
         }
     }
