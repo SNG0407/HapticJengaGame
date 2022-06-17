@@ -105,21 +105,21 @@ public class ObjectControl : MonoBehaviour
         Debug.Log("SendState");
         Debug.Log(data);
 
-
+        serial.Close();
     }
 
-    public SerialPort serial = new SerialPort("COM4", 9600); //here change port - where you have connected arduino to computer
+    public SerialPort serial = new SerialPort("COM5", 9600); //here change port - where you have connected arduino to computer
 
 
     private Rigidbody rb;
     //public GameObject mpu = GameObject.Find("serial"); //.FindObjectsWithTag("MPU"); 
     // public GameObject mpu1 = GameObject.Find("SerialReader"); //.FindObjectsWithTag("MPU"); 
-    public string receivedString;
+    private string receivedString;
 
-    public int angle = 0; //Actual current angle of Jenga
-    public bool IsClicked = false;
-    public bool IsMPUWorking = false;
-    public bool IsServoWorking = false;
+    private int angle = 0; //Actual current angle of Jenga
+    private bool IsClicked = false;
+    private bool IsMPUWorking = false;
+    private bool IsServoWorking = false;
     bool firstTimeReading = true;
     public Vector3 offset;
     public Vector3 error;
@@ -127,7 +127,7 @@ public class ObjectControl : MonoBehaviour
 
     void Start()
     {
-        serial.Open();
+        //serial.Open();
         //serial.Close();
     }
 
@@ -205,7 +205,7 @@ public class ObjectControl : MonoBehaviour
             //string data = strNum;
             serial.Write("1#0#180&");
             //Debug.Log("Test");
-            Debug.Log("1#0#0&");
+            Debug.Log("1#0#180&");
             //serial.Close();
         }
     }

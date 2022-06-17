@@ -329,7 +329,23 @@ public class HapticTool : MonoBehaviour {
 
 	    UpdateToolPositionAndRotation();
 	}
-    }
+		//if (Input.GetKeyDown(KeyCode.T))
+		//{
+		//	Vector3 newPosition = this.transform.position;
+		//	newPosition.y += 10.0f;
+		//	Debug.Log(newPosition);
+		//	UnityHaptics.SetToolPosition(newPosition);
+		//}
+		//if (Running)
+		//{
+		//	if (Input.GetKeyDown(KeyCode.T))
+		//	{
+		//		Vector3 newPosition = this.transform.position;
+		//		newPosition.y += 10.0f;
+		//		UnityHaptics.SetToolPosition(newPosition);
+		//	}
+		//}
+	}
 
     void FixedUpdate ()
     {

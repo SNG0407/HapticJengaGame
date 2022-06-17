@@ -6,7 +6,7 @@ using System.IO.Ports;
 public class Test : MonoBehaviour
 {
 
-    SerialPort stream = new SerialPort("COM3", 115200); //Set the port (com4) and the baud rate (9600, is standard on most devices)
+    SerialPort stream = new SerialPort("COM9", 115200); //Set the port (com4) and the baud rate (9600, is standard on most devices)
 
 
     void Start()
@@ -33,7 +33,7 @@ public class Test : MonoBehaviour
             stream.Open();
         }
         //stream.Open();
-        string value = stream.ReadLine(); //Read the information
+        string value = stream.ReadLine(); //Read the information //ReadLine (stream.ReadByte()).ToString()
 
         return value;
         //stream.Close();
