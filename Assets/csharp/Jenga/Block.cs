@@ -28,6 +28,7 @@ public class Block : MonoBehaviour
     public Transform DirectArrowPrefab;
     public Transform OriginPrefab;
     public static bool IsUsingGuide = false;
+    public static int GuidingBlockNum = -1;
     private List<Transform> arrowGuides;
     private Transform origin;
     public const float arrowDeformation = 0.5f;
@@ -197,6 +198,7 @@ public class Block : MonoBehaviour
     public void ArrowGuideOn()
     {
         if (Block.IsUsingGuide) return;
+        if (BlockIdx == Block.GuidingBlockNum) return;
 
         Ray ray = new Ray();
         RaycastHit rayHit;
@@ -211,7 +213,6 @@ public class Block : MonoBehaviour
             {
                 arrowGuides[3].gameObject.SetActive(true);
                 arrowGuides[5].gameObject.SetActive(true);
-                Debug.Log(rayHit.collider.gameObject.name);
             }
         }
         else
@@ -219,7 +220,6 @@ public class Block : MonoBehaviour
             arrowGuides[3].gameObject.SetActive(true);
             arrowGuides[5].gameObject.SetActive(true);
         }
-        Debug.DrawRay(ray.origin, ray.direction * distance, Color.red);
 
         // x- 방향 체크
         ray.origin = origin.position;
@@ -269,6 +269,7 @@ public class Block : MonoBehaviour
         }
 
         Block.IsUsingGuide = true;
+        Block.GuidingBlockNum = BlockIdx;
 
         StartCoroutine(ArrowGuideTimerOn());
     }

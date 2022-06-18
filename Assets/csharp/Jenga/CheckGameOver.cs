@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CheckGameOver : MonoBehaviour
 {
-    private int numOfObjectCollided;
+    public int numOfObjectCollided;
     public int boundNum = 6;
     void Start()
     {

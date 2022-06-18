@@ -375,7 +375,7 @@ public class Tower : MonoBehaviour
 
     private IEnumerator Stabilize()
     {
-        var wait = new WaitForSeconds(0.03f);
+        var wait = new WaitForSeconds(0.05f);
 
         foreach (Transform block in blocks)
         {
@@ -388,7 +388,6 @@ public class Tower : MonoBehaviour
         }
         if (bDestroying) bDestroying = false;
         bGameRunning = true;
-        Debug.Log("!!!!!!");
     }
 
     private void AddBlockOneLine()
