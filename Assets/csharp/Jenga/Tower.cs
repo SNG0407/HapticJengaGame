@@ -116,7 +116,7 @@ public class Tower : MonoBehaviour
         }
         // init blocktobedeleted
         blockToBeDeleted.Clear();
-        bDestroying = false;
+        bDestroying = true;
         // Set blocks for game
         blocks = new List<Transform>(new Transform[height * 3]);
 
@@ -180,7 +180,8 @@ public class Tower : MonoBehaviour
             IsGameOver = plane.GetComponent<CheckGameOver>().IsGameOver();
         }
         // if the number of falling blocks is more than 5
-        if (numOfFallingBlocks > 5 || IsGameOver)
+        //if (numOfFallingBlocks > 10 || IsGameOver)
+        if(IsGameOver)
         {
             // GameOver UI Active
             gameOverUI.SetActive(true);
@@ -374,9 +375,8 @@ public class Tower : MonoBehaviour
 
     private IEnumerator Stabilize()
     {
-        var wait = new WaitForSeconds(0.05f);
+        var wait = new WaitForSeconds(0.03f);
 
-        int index = 0;
         foreach (Transform block in blocks)
         {
             if (block == null) continue;
@@ -384,17 +384,11 @@ public class Tower : MonoBehaviour
             body.velocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
 
-            index += 1;
-            if (index >= blocks.Count)
-            {
-                if (bDestroying) bDestroying = false;
-                bGameRunning = true;
-            }
-            else
-            {
-                yield return wait;
-            }
+            yield return wait;
         }
+        if (bDestroying) bDestroying = false;
+        bGameRunning = true;
+        Debug.Log("!!!!!!");
     }
 
     private void AddBlockOneLine()
