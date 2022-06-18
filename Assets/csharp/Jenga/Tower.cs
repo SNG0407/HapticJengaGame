@@ -24,9 +24,16 @@ public class Tower : MonoBehaviour
     public GameObject gamePlayingUI;
 
     [Header("Game setting")]
+    public GameObject plane;
     private int gameScore = 0;
     private GameObject device;
     private int nearestBlockIdx = -1;
+
+    [Header("Audio")]
+    public AudioClip audioDestroyBlock;
+    public AudioClip audioGameOver;
+    public AudioClip audioGameStart;
+    private AudioSource audioSource;
 
     private int[] getRandomBlockType()
     {
@@ -56,6 +63,8 @@ public class Tower : MonoBehaviour
         gameStartmenuUI.SetActive(true);
         gamePlayingUI.SetActive(false);
         device = GameObject.Find("Device");
+        plane = GameObject.Find("Plane");
+        audioSource = GetComponent<AudioSource>();
         blockToBeDeleted = new List<int[]>();
     }
 
@@ -64,7 +73,7 @@ public class Tower : MonoBehaviour
         if (bGameRunning)
         {
             // Find the block closest to the device
-            if (device != null) nearestBlockIdx = FindNearBlockNum(device.transform.position);
+            //if (device != null) nearestBlockIdx = FindNearBlockNum(device.transform.position);
 
             if (!bDestroying && blockToBeDeleted.Count == 0)
             {
@@ -73,12 +82,12 @@ public class Tower : MonoBehaviour
                 // Check if blocks of the same color are on one line
                 CheckBlockInLine();
             }
-            else if (!bDestroying && blockToBeDeleted.Count != 0) 
+            else if (!bDestroying && blockToBeDeleted.Count != 0)
             {
-                StartCoroutine(DestroyBlocksCorutine());
-                //DestoryBlocks();
+                //StartCoroutine(DestroyBlocksCorutine());
+                DestoryBlocks();
             }
-            
+
             // test for add block 
             /*
             if(Input.GetKeyDown(KeyCode.T))
@@ -100,6 +109,11 @@ public class Tower : MonoBehaviour
     {
         // init score
         gameScore = 0;
+        // init numOfCollided in Plane
+        if(plane.GetComponent<CheckGameOver>()!= null)
+        {
+            plane.GetComponent<CheckGameOver>().ResetNumOfObjectCollided();
+        }
         // init blocktobedeleted
         blockToBeDeleted.Clear();
         bDestroying = false;
@@ -154,18 +168,27 @@ public class Tower : MonoBehaviour
         {
             if (block == null) continue;
             Rigidbody body = block.GetComponent<Rigidbody>();
-            if (body.velocity.y < -1.0f)
+            if (body.velocity.y < -4.0f)
             {
                 numOfFallingBlocks += 1;
             }
         }
+        // get num of collided object
+        bool IsGameOver = false;
+        if(plane.GetComponent<CheckGameOver>() != null)
+        {
+            IsGameOver = plane.GetComponent<CheckGameOver>().IsGameOver();
+        }
         // if the number of falling blocks is more than 5
-        if (numOfFallingBlocks > 5)
+        if (numOfFallingBlocks > 5 || IsGameOver)
         {
             // GameOver UI Active
             gameOverUI.SetActive(true);
             gamePlayingUI.SetActive(false);
             bGameRunning = false;
+            // audio 
+            audioSource.clip = audioGameOver;
+            audioSource.Play();
         }
     }
 
@@ -196,7 +219,7 @@ public class Tower : MonoBehaviour
                 //if(block.transform.position.x < -2.0f || block.transform.position.x > 2.0f || block.transform.position.z < -2.0f)
                 //find block located at that height and not falling
                 //refheight - 0.1f < BlockHeight < refHeight + 0.1f
-                if (refHeight - 0.3f  < block.transform.position.y && block.transform.position.y < refHeight + 0.3f )
+                if (refHeight - 0.3f < block.transform.position.y && block.transform.position.y < refHeight + 0.3f)
                 {
                     if (!IsStableBlock(block))
                     {
@@ -317,6 +340,8 @@ public class Tower : MonoBehaviour
         }
         blockToBeDeleted.Clear();
         bDestroying = false;
+        audioSource.clip = audioDestroyBlock;
+        audioSource.Play();
         StartCoroutine(Stabilize());
     }
 
@@ -330,7 +355,7 @@ public class Tower : MonoBehaviour
         int index = 0;
         foreach (int[] blockIndexArr in blockToBeDeleted)
         {
-            for(int i = 0; i < blockIndexArr.Length; i++)
+            for (int i = 0; i < blockIndexArr.Length; i++)
             {
                 blockIndexArr[i] += index * 3;
             }
@@ -349,7 +374,7 @@ public class Tower : MonoBehaviour
 
     private IEnumerator Stabilize()
     {
-        var wait = new WaitForSeconds(0.02f);
+        var wait = new WaitForSeconds(0.05f);
 
         int index = 0;
         foreach (Transform block in blocks)
@@ -376,7 +401,7 @@ public class Tower : MonoBehaviour
     {
         //add blocks
         float y = spawnHeight;
-        int[] blockTypes = getRandomBlockType();
+        int[] blockTypes = getRandomBlockTypeWithoutOverlap();
 
         Transform block = Instantiate(blockPrefabs[blockTypes[0]], transform);
         block.localPosition = new Vector3(0f, y, Block.length / 2.0f);
@@ -400,7 +425,7 @@ public class Tower : MonoBehaviour
         height++;
 
         // 기존 블럭의 위치 조정
-        for(int i = blocks.Count-1; i > 2; i--)
+        for (int i = blocks.Count - 1; i > 2; i--)
         {
             //위치 조정
             blocks[i].transform.position = new Vector3(
@@ -508,7 +533,7 @@ public class Tower : MonoBehaviour
         int num = -1;
         int i = 0;
         float shortestDistance = 5.0f;
-        foreach(var block in blocks)
+        foreach (var block in blocks)
         {
             float dis = Vector3.Distance(refPos, block.position);
             if (dis < shortestDistance)

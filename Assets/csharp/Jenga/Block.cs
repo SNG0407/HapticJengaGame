@@ -23,6 +23,16 @@ public class Block : MonoBehaviour
     private Material initMaterial;
     public Material transMaterial;
 
+    [Header("ArrowGuide")]
+    public Transform CurveArrowPrefab;
+    public Transform DirectArrowPrefab;
+    public Transform OriginPrefab;
+    public static bool IsUsingGuide = false;
+    private List<Transform> arrowGuides;
+    private Transform origin;
+    public const float arrowDeformation = 0.5f;
+    public Vector3 originVec;
+
     private Vector3 DeformRandomly(Vector3 point)
     {
         return new Vector3(
@@ -105,40 +115,178 @@ public class Block : MonoBehaviour
         body.mass = weight;
 
         initMaterial = GetComponent<MeshRenderer>().material;
+
+        originVec = transform.position - new Vector3(transform.position.x, transform.position.y, transform.position.z - length);
+    }
+
+    private void OnDestroy()
+    {
+        foreach(var arrow in arrowGuides)
+        {
+            Destroy(arrow.gameObject);
+        }
+        Destroy(origin.gameObject);
+    }
+    private void InitArrow()
+    {
+        arrowGuides = new List<Transform>(new Transform[6]);
+        Quaternion rotation = Quaternion.Euler(0.0f, -90.0f, 0.0f);
+
+        Transform arrow = Instantiate(DirectArrowPrefab, transform);
+        arrow.localPosition = new Vector3(0, 0, - length - arrowDeformation);
+        arrow.localRotation = rotation;
+        arrowGuides[0] = arrow;
+
+        arrow = Instantiate(DirectArrowPrefab, transform);
+        arrow.localPosition = new Vector3(-width, 0, -length / 2.0f);
+        rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        arrow.localRotation = rotation;
+        arrowGuides[1] = arrow;
+
+        arrow = Instantiate(DirectArrowPrefab, transform);
+        arrow.localPosition = new Vector3(0.0f, 0.0f, arrowDeformation);
+        rotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
+        arrow.localRotation = rotation;
+        arrowGuides[2] = arrow;
+
+        arrow = Instantiate(DirectArrowPrefab, transform);
+        arrow.localPosition = new Vector3(width, 0, -length / 2.0f);
+        rotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+        arrow.localRotation = rotation;
+        arrowGuides[3] = arrow;
+
+        arrow = Instantiate(CurveArrowPrefab, transform);
+        arrow.localPosition = new Vector3(-width, 0, -length - arrowDeformation);
+        rotation = Quaternion.Euler(270.0f, 45.0f, 0.0f);
+        arrow.localRotation = rotation;
+        arrowGuides[4] = arrow;
+
+        arrow = Instantiate(CurveArrowPrefab, transform);
+        arrow.localPosition = new Vector3(width, 0, -length - arrowDeformation);
+        rotation = Quaternion.Euler(90.0f, 0.0f, -135.0f);
+        arrow.localRotation = rotation;
+        arrowGuides[5] = arrow;
+
+        Transform originBlock = Instantiate(OriginPrefab, transform);
+        originBlock.localPosition = new Vector3(0, 0, -length / 2.0f);
+        origin = originBlock;
+        origin.gameObject.SetActive(false);
+
+        ArrowGuideOff();
     }
 
     private void Start()
     {
         InitMesh();
+        InitArrow();
     }
 
-    private void FixedUpdate()
+    public void MakeObjectGlow()
     {
-        Rigidbody body = GetComponent<Rigidbody>();
+        IsNearestToDevice = true;
+        GetComponent<GlowManager>().EnableGlow();
+    }
 
-        if (body.velocity.magnitude < 0.1f)
-        {
-            body.velocity = new Vector3(0.0f, 0.0f, 0.0f);
-        }
+    public void MakeObjectToOriginalState()
+    {
+        IsNearestToDevice = false;
+        GetComponent<GlowManager>().DisableGlow();
+    }
+    
 
-        if (body.angularVelocity.magnitude < 0.1f)
-        {
-            body.angularVelocity = new Vector3(0.0f, 0.0f, 0.0f);
-        }
+    public void ArrowGuideOn()
+    {
+        if (Block.IsUsingGuide) return;
 
-        // 가장 가까운 블럭인지
-        if(GameObject.Find("Tower").GetComponent<Tower>() != null)
+        Ray ray = new Ray();
+        RaycastHit rayHit;
+        float distance = 10.0f;
+
+        // x+ 방향 먼저 체크
+        ray.origin = origin.position;
+        ray.direction = arrowGuides[3].position - arrowGuides[1].position;
+        if(Physics.Raycast(ray.origin, ray.direction, out rayHit, distance))
         {
-            if(BlockIdx == GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx() && IsNearestToDevice == false)
+            if (rayHit.collider.gameObject.GetComponent<Block>() == null)
             {
-                IsNearestToDevice = true;
-                GetComponent<GlowManager>().EnableGlow();
-            }
-            else if(BlockIdx != GameObject.Find("Tower").GetComponent<Tower>().getNearestBlockIdx() && IsNearestToDevice == true)
-            {
-                IsNearestToDevice = false;
-                GetComponent<GlowManager>().DisableGlow();
+                arrowGuides[3].gameObject.SetActive(true);
+                arrowGuides[5].gameObject.SetActive(true);
+                Debug.Log(rayHit.collider.gameObject.name);
             }
         }
+        else
+        {
+            arrowGuides[3].gameObject.SetActive(true);
+            arrowGuides[5].gameObject.SetActive(true);
+        }
+        Debug.DrawRay(ray.origin, ray.direction * distance, Color.red);
+
+        // x- 방향 체크
+        ray.origin = origin.position;
+        ray.direction = arrowGuides[1].position - arrowGuides[3].position;
+        if (Physics.Raycast(ray.origin, ray.direction, out rayHit, distance))
+        {
+            if (rayHit.collider.gameObject.GetComponent<Block>() == null)
+            {
+                arrowGuides[1].gameObject.SetActive(true);
+                arrowGuides[4].gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            arrowGuides[1].gameObject.SetActive(true);
+            arrowGuides[4].gameObject.SetActive(true);
+        }
+
+        // z+ 방향 체크
+        ray.origin = origin.position;
+        ray.direction = arrowGuides[2].position - arrowGuides[0].position;
+        if (Physics.Raycast(ray.origin, ray.direction, out rayHit, distance))
+        {
+            if (rayHit.collider.gameObject.GetComponent<Block>() == null)
+            {
+                arrowGuides[2].gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            arrowGuides[2].gameObject.SetActive(true);
+        }
+
+        // z- 방향 체크
+        ray.origin = origin.position;
+        ray.direction = arrowGuides[0].position - arrowGuides[2].position;
+        if (Physics.Raycast(ray.origin, ray.direction, out rayHit, distance))
+        {
+            if (rayHit.collider.gameObject.GetComponent<Block>() == null)
+            {
+                arrowGuides[0].gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            arrowGuides[0].gameObject.SetActive(true);
+        }
+
+        Block.IsUsingGuide = true;
+
+        StartCoroutine(ArrowGuideTimerOn());
+    }
+
+    private IEnumerator ArrowGuideTimerOn()
+    {
+        var wait = new WaitForSeconds(2.0f);
+        yield return wait;
+
+        ArrowGuideOff();
+    }
+
+    public void ArrowGuideOff()
+    {
+        foreach(var arrow in arrowGuides)
+        {
+            arrow.gameObject.SetActive(false);
+        }
+        Block.IsUsingGuide = false;
     }
 }

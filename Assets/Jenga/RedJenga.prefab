@@ -117,7 +117,11 @@ MonoBehaviour:
   BlockType: 0
   BlockIdx: 0
   IsNearestToDevice: 0
-  transMaterial: {fileID: 2100000, guid: eb101406c0f83514ba586bfe462bd0fc, type: 2}
+  transMaterial: {fileID: 0}
+  CurveArrowPrefab: {fileID: 4032223278803101998, guid: 193196331cfaef548868225a7f878d6e, type: 3}
+  DirectArrowPrefab: {fileID: 8494032050592340314, guid: 2593198f0a0199d46966493a7179c9a6, type: 3}
+  OriginPrefab: {fileID: 7716958298368836191, guid: 049e5cda1c02c964389322d7b38f9afc, type: 3}
+  originVec: {x: 0, y: 0, z: 0}
 --- !u!114 &1266730631462692013
 MonoBehaviour:
   m_ObjectHideFlags: 0

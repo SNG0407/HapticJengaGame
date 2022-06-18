@@ -166,7 +166,9 @@ public class HapticTool : MonoBehaviour {
     {
 	if (HapticWorkspace != null)
 	{
-	    UnityHaptics.SetHapticWorkspace(HapticWorkspace);
+			Debug.Log("HapticWorkspace.position : " + HapticWorkspace.position);	
+
+		UnityHaptics.SetHapticWorkspace(HapticWorkspace);
 	}
     }
 
@@ -326,9 +328,26 @@ public class HapticTool : MonoBehaviour {
 	    UnityHaptics.LogMessage(res, true);
 	    Started = res == HapticNativePlugin.SUCCESS;
 	    Running = Started;
+
 	    UpdateToolPositionAndRotation();
 	}
-    }
+		//if (Input.GetKeyDown(KeyCode.T))
+		//{
+		//	Vector3 newPosition = this.transform.position;
+		//	newPosition.y += 10.0f;
+		//	Debug.Log(newPosition);
+		//	UnityHaptics.SetToolPosition(newPosition);
+		//}
+		//if (Running)
+		//{
+		//	if (Input.GetKeyDown(KeyCode.T))
+		//	{
+		//		Vector3 newPosition = this.transform.position;
+		//		newPosition.y += 10.0f;
+		//		UnityHaptics.SetToolPosition(newPosition);
+		//	}
+		//}
+	}
 
     void FixedUpdate ()
     {
